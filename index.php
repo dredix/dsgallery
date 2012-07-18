@@ -20,11 +20,10 @@ set_error_handler("customError");
 <html>
 <head>
 	<title>Gallery</title>
-	<meta name="viewport" content="user-scalable=no, width=device-width" />
 	<link rel="stylesheet" type="text/css" href="http://current.bootstrapcdn.com/bootstrap-v204/css/bootstrap-combined.min.css">
     <style type="text/css">
 	<!--
-		body {padding-top: 60px;padding-bottom: 40px; width:80%;margin-left:auto;margin-right:auto}
+		body {padding-top: 60px;padding-bottom: 40px; width:90%;margin-left:auto;margin-right:auto}
 		img, a.folder{display: block; float: left; overflow: hidden; margin:0 0 .5em .5em; width: 150px; height:150px; border: 1px solid #999}
 		a.folder {background:#fff url('folder.png') no-repeat center center; text-align: center;}
 		a:hover {text-decoration: none; color: black; border-color: black;}
