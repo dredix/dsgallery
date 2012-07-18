@@ -1,7 +1,11 @@
 <?php
-if(isset($_GET) && isset($_GET['dir'])) $dir = $_GET['dir'];
-if (strlen($dir)==0){$dir="./pics/";}
 
+// Initialise directory for current request.
+$dir = "";
+if(isset($_GET) && isset($_GET['dir'])) $dir = $_GET['dir'];
+if (strlen($dir) == 0) $dir = "./pics/";
+
+// Allowed file extensions. We only want pictures at this stage. Every other file type is ignored.
 $img_exts = array("jpg", "jpeg", "gif", "bmp", "png");
 
 //error handler function
@@ -32,19 +36,20 @@ set_error_handler("customError");
 <body>
 <h1><a href="?dir=./pics/">Gallery</a></h1>
 <?php
-if (is_dir($dir)) {
-	if ($dir != './pics/') {
-		echo '<p><a href="?dir=' . dirname($dir) . "/\">Back</a></p>\n";
+if (is_dir($dir)) { // If we are in a directory
+	if ($dir != './pics/') { // and it's not the root directory
+		echo '<p><a href="?dir=' . dirname($dir) . "/\">Back</a></p>\n"; // add a back link.
 	}
+	// TODO: Add breadcrumbs.
 	
-	if ($dh = opendir($dir)) {
+	if ($dh = opendir($dir)) { // iterate through the files in the current directory.
 		while (($file = readdir($dh)) !== false) {
 			if ($file == '.' || $file == '..') continue;
 			$filename = $dir . $file;
-			if (is_dir($filename)) {
-				echo '<a class="folder" href="?dir=' . urlencode($filename) . '/">' . $file . "</a>\n";
-			} elseif (in_array(strtolower(pathinfo($filename)['extension']), $img_exts)) {
-				echo '<img src="' . $filename . '" alt="' . $filename . '" title="' . $filename . "\" />\n";
+			if (is_dir($filename)) { // if current item is a directory
+				echo '<a class="folder" href="?dir=' . urlencode($filename) . '/">' . $file . "</a>\n"; // create a link to display its contents.
+			} elseif (in_array(strtolower(pathinfo($filename)['extension']), $img_exts)) { // if it's an image
+				echo '<img src="' . $filename . '" alt="' . $filename . '" title="' . $filename . "\" />\n"; // display it on the page.
 			}
 		}
 		closedir($dh);
