@@ -21,8 +21,7 @@ set_error_handler("customError");
 <head>
 	<title>Gallery</title>
 	<meta name="viewport" content="user-scalable=no, width=device-width" />
-	<link rel="stylesheet" type="text/css" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css">
+	<link rel="stylesheet" type="text/css" href="http://current.bootstrapcdn.com/bootstrap-v204/css/bootstrap-combined.min.css">
     <style type="text/css">
 	<!--
 		body {padding-top: 60px;padding-bottom: 40px; width:80%;margin-left:auto;margin-right:auto}
