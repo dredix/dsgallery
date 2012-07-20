@@ -1,8 +1,11 @@
+<html><head><title></title>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1" >
+</head><body><div id="items">
 <?php
 
-function right($string, $chars) { 
-    return substr($string, strlen($string) - $chars, $chars); 
-} 
+function right($string, $chars) {
+    return substr($string, strlen($string) - $chars, $chars);
+}
 
 function get_param($key, $default) {
 	$var = "";
@@ -22,17 +25,17 @@ function is_dir_or_image($file)
 	if(is_dir($file)) return true;
 	$info = pathinfo($file);
 	if (isset($info['extension'])) {
-		if(in_array(strtolower($info['extension']), $GLOBALS["img_exts"])) 
+		if(in_array(strtolower($info['extension']), $GLOBALS["img_exts"]))
 			return true;
 	}
-	
+
 	return false;
 }
 
-/////////////////////////// MAIN ///////////////////////////
+/////////////////////////////////////// MAIN ///////////////////////////////////////
 
 // Set number of elements per page
-define("PAGE_SIZE", 20);
+define("PAGE_SIZE", 50);
 
 //set error handler
 set_error_handler("custom_error");
@@ -55,16 +58,19 @@ $sliced = array_slice ($filtered, $page * PAGE_SIZE, PAGE_SIZE, true);
 // Generate links for directories and img tags for images
 foreach($sliced as $file) {
 	if (is_dir($file)) { // if current item is a directory
-		echo '<a class="folder" href="?dir=' . urlencode($file) . '/">' . $file . "</a>\n"; // create a link to its contents
+		echo '<div class="item"><a class="folder" href="?dir=' . rawurlencode($file) . '/">' .
+			pathinfo($file)['basename'] . "</a></div>\n"; // create a link to its contents
 	} else {
-		echo '<img src="' . $file . '" alt="' . $file . '" title="' . $file . "\" />\n"; // otherwise display image on page.
+		echo '<div class="item"><img src="' . $file . '" alt="' . $file . '" title="' .
+			$file . "\" /></div>\n"; // otherwise display image on page.
 	}
 }
 // Create a button to load more elements at the bottom of the page.
 if (count($sliced) == PAGE_SIZE && count($filtered) > ($page + 1) * PAGE_SIZE) {
-	echo "\n<div class=\"loadmorediv\"><a class=\"loadmorelnk\" href=\"?page=" . ($page + 1) . "&dir=" . urlencode($dir) . "\">LOAD MORE</a></div>";
+	echo "\n<div class=\"loadmorediv\"><a class=\"loadmorelnk\" href=\"?page=" . ($page + 1) . "&dir=" . rawurlencode($dir) . "\">LOAD MORE</a></div>";
 } else {
-	echo "\n<div class=\"loadmorediv\"><span>You have reached the end of the directory.</span></div>";
+	echo "\n<div class=\"loadmorediv\"> </div>";
 }
 
 ?>
+</div></body></html>
