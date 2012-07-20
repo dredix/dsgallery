@@ -20,6 +20,7 @@ set_error_handler("customError");
 <html>
 <head>
 	<title>Gallery</title>
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js" type="text/javascript"></script>
 	<link rel="stylesheet" type="text/css" href="http://current.bootstrapcdn.com/bootstrap-v204/css/bootstrap-combined.min.css">
     <style type="text/css">
 	<!--
@@ -31,33 +32,19 @@ set_error_handler("customError");
 		div.link-to-top { clear: both; display: block; padding-top: 2em; text-align: center }
 	-->
     </style>	
+<script>
+$().ready(function() {
+	$('<div/>').load('load_images ',function(){ 
+	    $(this).appendTo('#content');    // once they're loaded, append them to our content area
+	});
+}
 
+</script>
 </head>
 <body>
 <a name="TOP"></a>
 <h1><a href="?dir=./pics/">Gallery</a></h1>
 <div id="content">
-<?php
-if (is_dir($dir)) { // If we are in a directory
-	if ($dir != './pics/') { // and it's not the root directory
-		echo '<p><a href="?dir=' . dirname($dir) . "/\">Back</a></p>\n"; // add a back link.
-	}
-	// TODO: Add breadcrumbs.
-	
-	if ($dh = opendir($dir)) { // iterate through the files in the current directory.
-		while (($file = readdir($dh)) !== false) {
-			if ($file == '.' || $file == '..') continue;
-			$filename = $dir . $file;
-			if (is_dir($filename)) { // if current item is a directory
-				echo '<a class="folder" href="?dir=' . urlencode($filename) . '/">' . $file . "</a>\n"; // create a link to display its contents.
-			} elseif (in_array(strtolower(pathinfo($filename)['extension']), $img_exts)) { // if it's an image
-				echo '<img src="' . $filename . '" alt="' . $filename . '" title="' . $filename . "\" />\n"; // display it on the page.
-			}
-		}
-		closedir($dh);
-	}
-}
-?>
 </div>
 <div class="link-to-top">
 <p><a href="#TOP">BACK TO TOP</a></p>
