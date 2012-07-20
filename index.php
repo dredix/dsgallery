@@ -34,7 +34,7 @@
 	});
 
 	$(window).scroll(function () {
-		if ($(window).scrollTop() >= $(document).height() - $(window).height() - 100) {
+		if ($(window).scrollTop() >= $(document).height() - $(window).height() - 10) {
 			if ($("a.loadmorelnk").length > 0) {
 				var appending = "load_images.php" + $("a.loadmorelnk").attr("href") + " #items";
 				$('<div/>').load(appending, function() {
