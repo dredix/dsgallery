@@ -24,15 +24,19 @@ set_error_handler("customError");
     <style type="text/css">
 	<!--
 		body {padding-top: 60px;padding-bottom: 40px; width:90%;margin-left:auto;margin-right:auto}
+		h1 { margin-bottom: 1em; }
 		img, a.folder{display: block; float: left; overflow: hidden; margin:0 0 .5em .5em; width: 150px; height:150px; border: 1px solid #999}
 		a.folder {background:#fff url('folder.png') no-repeat center center; text-align: center;}
 		a:hover {text-decoration: none; color: black; border-color: black;}
+		div.link-to-top { clear: both; display: block; padding-top: 2em; text-align: center }
 	-->
     </style>	
 
 </head>
 <body>
+<a name="TOP"></a>
 <h1><a href="?dir=./pics/">Gallery</a></h1>
+<div id="content">
 <?php
 if (is_dir($dir)) { // If we are in a directory
 	if ($dir != './pics/') { // and it's not the root directory
@@ -54,5 +58,9 @@ if (is_dir($dir)) { // If we are in a directory
 	}
 }
 ?>
+</div>
+<div class="link-to-top">
+<p><a href="#TOP">BACK TO TOP</a></p>
+</div>
 </body>
 </html>
