@@ -84,13 +84,13 @@ $thumb_basedir = get_prop($ftp_cfg, 'thumb_basedir', './pics');
 $dir = get_param("dir", "");
 $page = get_param("page", 0);
 
-// set up basic connection
+// Set up basic connection
 $conn_id = ftp_connect($ftp_server); 
-// login with username and password
+// Login with username and password
 $login_result = ftp_login($conn_id, $ftp_user, $ftp_passwd); 
 // Retrieve folders and images from current ftp directory
 $files = ftp_get_files($conn_id, $ftp_basedir . prefix('/', $dir));
-// close the FTP stream 
+// Close the FTP stream 
 ftp_close($conn_id); 
 
 // Get the actual page requested in the parameters
@@ -98,11 +98,13 @@ $sliced = array_slice ($files, $page * PAGE_SIZE, PAGE_SIZE, true);
 
 // Generate links for directories and img tags for images
 foreach($sliced as $file) {
-	if ($file[0] == 'folder') { // if current item is a directory
+	if ($file[0] == 'folder') { // If current item is a directory
 		$fpath = suffix($dir, '/') . $file[1];
 		echo '<div class="item"><a class="folder" href="?dir=' . rawurlencode($fpath) . '">' .
 			$file[1] . "</a></div>\n"; // create a link to its contents
 	} else {
+		// Otherwise if it's an image then create an ftp link to the picture
+		// and load a thumbnail there is one.
 		$thumbpath = rawurlencode($thumb_basedir . '/' .  suffix($dir, '/') . $file[1]);
 		$filename = $ftp_basedir . prefix('/', $dir) . '/' . $file[1];
 		$ftppath = "ftp://$ftp_user:$ftp_passwd@$ftp_server" . $filename;
