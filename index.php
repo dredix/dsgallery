@@ -19,7 +19,7 @@
 </head>
 <body>
 <a name="TOP"></a>
-<h1><a href="?dir=./pics/">Gallery</a></h1>
+<h1><a href="?dir=">Gallery</a></h1>
 <div id="content">
 </div>
 <div class="link-to-top">
@@ -28,7 +28,7 @@
 
 <script>
 	$().ready(function() {
-		$('<div/>').load('load_images.php' + window.location.search, function() {
+		$('<div/>').load('load_from_ftp.php' + window.location.search, function() {
 			$(this).appendTo('#content');
 		});
 	});
@@ -36,7 +36,7 @@
 	$(window).scroll(function () {
 		if ($(window).scrollTop() >= $(document).height() - $(window).height() - 10) {
 			if ($("a.loadmorelnk").length > 0) {
-				var appending = "load_images.php" + $("a.loadmorelnk").attr("href") + " #items";
+				var appending = "load_from_ftp.php" + $("a.loadmorelnk").attr("href") + " #items";
 				$('<div/>').load(appending, function() {
 					$("div.loadmorediv").remove();
 					$(this).appendTo('#content');
