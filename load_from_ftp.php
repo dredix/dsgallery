@@ -113,7 +113,7 @@ foreach($sliced as $file) {
 		$thumbpath = $thumb_basedir . '/' .  suffix($dir, '/') . $file[1];
 		$filename = $ftp_basedir . prefix('/', $dir) . '/' . $file[1];
 		$ftppath = "ftp://$ftp_user:$ftp_passwd@$ftp_server" . url_encode($filename);
-		echo "<div class=\"item\"><a href=\"$ftppath\"><img src=\"" . (file_exists($thumbpath) ? $thumbpath : $ftppath) . "\" alt=\"$filename\" title=\"$filename\" /></a></div>\n";
+		echo "<div class=\"item\"><a href=\"$ftppath\"><img src=\"" . $thumbpath . "\" alt=\"$file[1]\" title=\"$filename\" /></a></div>\n";
 	}
 }
 
