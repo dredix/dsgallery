@@ -9,7 +9,8 @@
 			body {padding-top: 60px;padding-bottom: 40px; width:90%;margin-left:auto;margin-right:auto}
 			h1 { margin-bottom: 1em; }
 			div.item { display: block; float: left; margin:0 0 .5em .5em; width: 150px; height:150px; border: 1px solid #999 }
-			div.item img, div.item a.folder {display: block; height: 100%; width: 100%; overflow: hidden }
+			div.item img {display: block; max-height: 100%; max-width: 100%; overflow: hidden }
+			div.item a.folder {display: block; height: 100%; width: 100%; overflow: hidden }
 			a.folder {background:#fff url('folder.png') no-repeat center center; text-align: center; }
 			a:hover {text-decoration: none; color: black; border-color: black;}
 			div.loadmorediv { clear: both; display: block; padding-top: 2em; text-align: center; font-size: 130% }
