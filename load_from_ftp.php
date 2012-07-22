@@ -1,5 +1,5 @@
 <html><head><title></title>
-<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1" >
+<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1" >
 </head><body><div id="items">
 <?php
 
@@ -44,7 +44,7 @@ function ftp_get_files($con, $path) {
 	ftp_chdir($con, $path);
 	$contents = ftp_rawlist($con, ".");
 	$items = array();
-	
+
 	if(count($contents)){
 		foreach($contents as $line){
 			if (substr($line, 0, 1) === 'd') {
@@ -56,6 +56,11 @@ function ftp_get_files($con, $path) {
 		}
 	}
 	return $items;
+}
+
+function url_encode($str) {
+	$ret = rawurlencode($str);
+	return str_replace('%2F','/',$ret);
 }
 
 /////////////////////////////////////// MAIN ///////////////////////////////////////
@@ -85,13 +90,13 @@ $dir = get_param("dir", "");
 $page = get_param("page", 0);
 
 // Set up basic connection
-$conn_id = ftp_connect($ftp_server); 
+$conn_id = ftp_connect($ftp_server);
 // Login with username and password
-$login_result = ftp_login($conn_id, $ftp_user, $ftp_passwd); 
+$login_result = ftp_login($conn_id, $ftp_user, $ftp_passwd);
 // Retrieve folders and images from current ftp directory
 $files = ftp_get_files($conn_id, $ftp_basedir . prefix('/', $dir));
-// Close the FTP stream 
-ftp_close($conn_id); 
+// Close the FTP stream
+ftp_close($conn_id);
 
 // Get the actual page requested in the parameters
 $sliced = array_slice ($files, $page * PAGE_SIZE, PAGE_SIZE, true);
@@ -100,21 +105,21 @@ $sliced = array_slice ($files, $page * PAGE_SIZE, PAGE_SIZE, true);
 foreach($sliced as $file) {
 	if ($file[0] == 'folder') { // If current item is a directory
 		$fpath = suffix($dir, '/') . $file[1];
-		echo '<div class="item"><a class="folder" href="?dir=' . rawurlencode($fpath) . '">' .
+		echo '<div class="item"><a class="folder" href="?dir=' . url_encode($fpath) . '">' .
 			$file[1] . "</a></div>\n"; // create a link to its contents
 	} else {
 		// Otherwise if it's an image then create an ftp link to the picture
 		// and load a thumbnail there is one.
-		$thumbpath = rawurlencode($thumb_basedir . '/' .  suffix($dir, '/') . $file[1]);
+		$thumbpath = $thumb_basedir . '/' .  suffix($dir, '/') . $file[1];
 		$filename = $ftp_basedir . prefix('/', $dir) . '/' . $file[1];
-		$ftppath = "ftp://$ftp_user:$ftp_passwd@$ftp_server" . $filename;
+		$ftppath = "ftp://$ftp_user:$ftp_passwd@$ftp_server" . url_encode($filename);
 		echo "<div class=\"item\"><a href=\"$ftppath\"><img src=\"$thumbpath\" alt=\"$filename\" title=\"$filename\" /></a></div>\n";
 	}
 }
 
 // Create a button to load more elements at the bottom of the page.
 if (count($sliced) == PAGE_SIZE && count($files) > ($page + 1) * PAGE_SIZE) {
-	echo "\n<div class=\"loadmorediv\"><a class=\"loadmorelnk\" href=\"?page=" . ($page + 1) . "&dir=" . rawurlencode($dir) . "\">LOAD MORE</a></div>";
+	echo "\n<div class=\"loadmorediv\"><a class=\"loadmorelnk\" href=\"?page=" . ($page + 1) . "&dir=" . url_encode($dir) . "\">LOAD MORE</a></div>";
 } else {
 	echo "\n<div class=\"loadmorediv\"> </div>";
 }

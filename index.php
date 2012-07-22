@@ -1,7 +1,7 @@
 <html>
 <head>
-	<title>Gallery</title>
-	<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1" >
+	<title>Dead Simple Gallery</title>
+	<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1" >
 	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js" type="text/javascript"></script>
 	<link rel="stylesheet" type="text/css" href="http://current.bootstrapcdn.com/bootstrap-v204/css/bootstrap-combined.min.css">
 	<style type="text/css">
