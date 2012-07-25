@@ -25,7 +25,7 @@
 <h1><a href="?dir=">Dead Simple Gallery</a></h1>
 <div class="breadcrumbs">
 <?php
-	echo '<a href="?dir=">Home</a>';
+	echo '<p><a href="?dir=">Home</a>';
 	if (isset($_GET) && isset($_GET['dir']) && strlen($_GET['dir']) > 0) {
 		$crumbs = explode("/", $_GET['dir']);
 		$path = "";
@@ -37,7 +37,9 @@
 			}
 			echo '<span class="sepr">/</span>' . $crumbs[$count - 1] . "\n";
 		}
+		echo "</p>\n<p><a href=\"?page=-1&dir=" . $_GET['dir'] . '">LOAD THEM ALL</a>';
 	}
+	echo "</p>\n";
 ?>
 </div>
 <div id="content">

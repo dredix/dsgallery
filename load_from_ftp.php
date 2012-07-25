@@ -98,8 +98,10 @@ $files = ftp_get_files($conn_id, $ftp_basedir . prefix('/', $dir));
 // Close the FTP stream
 ftp_close($conn_id);
 
-// Get the actual page requested in the parameters
-$sliced = array_slice ($files, $page * PAGE_SIZE, PAGE_SIZE, true);
+// Get the actual page requested in the parameters.
+// If page is -1 then return the whole array (no slicing).
+$sliced = $page == -1 ? $files :
+	array_slice ($files, $page * PAGE_SIZE, PAGE_SIZE, true);
 
 // Generate links for directories and img tags for images
 foreach($sliced as $file) {
@@ -118,7 +120,7 @@ foreach($sliced as $file) {
 }
 
 // Create a button to load more elements at the bottom of the page.
-if (count($sliced) == PAGE_SIZE && count($files) > ($page + 1) * PAGE_SIZE) {
+if ($page >= 0 && count($sliced) == PAGE_SIZE && count($files) > ($page + 1) * PAGE_SIZE) {
 	echo "\n<div class=\"loadmorediv\"><a class=\"loadmorelnk\" href=\"?page=" . ($page + 1) . "&dir=" . url_encode($dir) . "\">LOAD MORE</a></div>";
 } else {
 	echo "\n<div class=\"loadmorediv\"> </div>";
