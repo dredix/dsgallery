@@ -43,19 +43,20 @@ function custom_error($errno, $errstr) {
 function ftp_get_files($con, $path) {
 	ftp_chdir($con, $path);
 	$contents = ftp_rawlist($con, ".");
+	$folders = array();
 	$items = array();
 
 	if(count($contents)){
 		foreach($contents as $line){
 			if (substr($line, 0, 1) === 'd') {
-				$items[] = array('folder', substr($line, 56));
+				$folders[] = array('folder', substr($line, 56));
 			}
 			elseif (substr($line, 0, 1) === '-' && in_array(strtolower(right($line, 3)), $GLOBALS["img_exts"]) ) {
 				$items[] = array('file', substr($line, 56));
 			}
 		}
 	}
-	return $items;
+	return array_merge($folders, $items);
 }
 
 function url_encode($str) {
