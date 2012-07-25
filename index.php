@@ -50,6 +50,7 @@
 </div>
 
 <script>
+	var appendingContent = 0;
 	$().ready(function() {
 		$('<div/>').load('load_from_ftp.php' + window.location.search, function() {
 			$(this).appendTo('#content');
@@ -58,12 +59,14 @@
 	});
 
 	$(window).scroll(function () {
-		if ($(window).scrollTop() >= $(document).height() - $(window).height() - 10) {
+		if (appendingContent == 0 && $(window).scrollTop() >= $(document).height() - $(window).height() - 80) {
 			if ($("a.loadmorelnk").length > 0) {
+				appendingContent = 1;
 				var appending = "load_from_ftp.php" + $("a.loadmorelnk").attr("href") + " #items";
 				$('<div/>').load(appending, function() {
 					$("div.loadmorediv").remove();
 					$(this).appendTo('#content');
+					appendingContent = 0;
 				});
 			}
 		}
