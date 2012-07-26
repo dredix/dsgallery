@@ -40,18 +40,34 @@ function custom_error($errno, $errstr) {
 	echo "\n<br><b>Error:</b> [$errno] $errstr";
 }
 
-function ftp_get_files($con, $path) {
-	ftp_chdir($con, $path);
-	$contents = ftp_rawlist($con, ".");
+function get_files_from_ftp($cfg, $path) {
+
+	// Load ftp parameters
+	$ftp_server	 = get_prop($cfg, 'ftp_server',  '127.0.0.1');
+	$ftp_user	 = get_prop($cfg, 'ftp_user',    'user');
+	$ftp_passwd	 = get_prop($cfg, 'ftp_passwd',  'password');
+
+	// Set up basic connection
+	$conn_id = ftp_connect($ftp_server);
+	// Login with username and password
+	$login_result = ftp_login($conn_id, $ftp_user, $ftp_passwd);
+	// Change to the desired folder
+	ftp_chdir($conn_id, $path);
+	// List contents
+	$contents = ftp_rawlist($conn_id, ".");
+	// Close the FTP stream
+	ftp_close($conn_id);
+	// Initialise arrays for organising results
 	$folders = array();
 	$items = array();
-
+	// Identify folders and pictures, then add them to the proper arrays
 	if(count($contents)){
 		foreach($contents as $line){
-			if (substr($line, 0, 1) === 'd') {
+			if (substr($line, 0, 1) === 'd') { // it's a folder
 				$folders[] = array('folder', substr($line, 56));
 			}
-			elseif (substr($line, 0, 1) === '-' && in_array(strtolower(right($line, 3)), $GLOBALS["img_exts"]) ) {
+			elseif (substr($line, 0, 1) === '-' && 
+				in_array(strtolower(right($line, 3)), $GLOBALS["img_exts"]) ) { // it's a picture
 				$items[] = array('file', substr($line, 56));
 			}
 		}
@@ -75,29 +91,26 @@ set_error_handler("custom_error");
 // Allowed file extensions. We only want pictures at this stage. Every other file type is ignored.
 $img_exts = array("jpg", "jpeg", "gif", "bmp", "png");
 
-// Load ftp parameters
-$ftp_cfg = parse_ini_file("config.ini");
+// Load configuration from ini file.
+$cfg = parse_ini_file("config.ini");
 
-$ftp_server	 = get_prop($ftp_cfg, 'ftp_server',  '127.0.0.1');
-$ftp_user	 = get_prop($ftp_cfg, 'ftp_user',    'user');
-$ftp_passwd	 = get_prop($ftp_cfg, 'ftp_passwd',  'password');
-$ftp_basedir = get_prop($ftp_cfg, 'ftp_basedir', '/Files/Pictures');
+// Read storage type and base path. Accepted values at the moment are ftp or fs (filesystem)
+$sto_type    = get_prop($cfg, 'sto_type',  'fs');
+$sto_basedir = get_prop($cfg, 'sto_basedir', '/Files/Pictures');
 
 // Base thumbnail directory
-$thumb_basedir = get_prop($ftp_cfg, 'thumb_basedir', './pics');
+$thumb_basedir = get_prop($cfg, 'thumb_basedir', './pics');
 
 // Initialise directory for current request.
 $dir = get_param("dir", "");
 $page = get_param("page", 0);
 
-// Set up basic connection
-$conn_id = ftp_connect($ftp_server);
-// Login with username and password
-$login_result = ftp_login($conn_id, $ftp_user, $ftp_passwd);
-// Retrieve folders and images from current ftp directory
-$files = ftp_get_files($conn_id, $ftp_basedir . prefix('/', $dir));
-// Close the FTP stream
-ftp_close($conn_id);
+$files = array();
+
+if ($sto_type == 'ftp') {
+	get_files_from_ftp($cfg, $sto_basedir . prefix('/', $dir));
+}
+
 
 // Get the actual page requested in the parameters.
 // If page is -1 then return the whole array (no slicing).
@@ -114,7 +127,7 @@ foreach($sliced as $file) {
 		// Otherwise if it's an image then create an ftp link to the picture
 		// and load a thumbnail there is one.
 		$thumbpath = $thumb_basedir . '/' .  suffix($dir, '/') . $file[1];
-		$filename = $ftp_basedir . prefix('/', $dir) . '/' . $file[1];
+		$filename = $sto_basedir . prefix('/', $dir) . '/' . $file[1];
 		$ftppath = "ftp://$ftp_user:$ftp_passwd@$ftp_server" . url_encode($filename);
 		echo "<div class=\"item\"><a href=\"$ftppath\"><img src=\"" . $thumbpath . "\" alt=\"$file[1]\" title=\"$filename\" /></a></div>\n";
 	}
