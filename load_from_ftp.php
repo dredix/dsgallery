@@ -2,11 +2,12 @@
 <meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1" >
 </head><body><div id="items">
 <?php
-
+// Get the n characters to the right of a string.
 function right($string, $chars) {
-    return substr($string, strlen($string) - $chars, $chars);
+	return substr($string, strlen($string) - $chars, $chars);
 }
 
+// Return a parameter from a get request if it exists, or a default value otherwise.
 function get_param($key, $default) {
 	$var = "";
 	if(isset($_GET) && isset($_GET[$key])) $var = $_GET[$key];
@@ -14,6 +15,7 @@ function get_param($key, $default) {
 	return $var;
 }
 
+// Return a property from the contents of a config file.
 function get_prop($properties, $key, $default) {
 	$var = "";
 	if(isset($properties) && isset($properties[$key])) $var = $properties[$key];
@@ -21,6 +23,7 @@ function get_prop($properties, $key, $default) {
 	return $var;
 }
 
+// Insert a prefix on a nonempty string
 function prefix($prefix, $str) {
 	if (isset($str) && strlen($str) > 0) {
 		return $prefix . $str;
@@ -28,6 +31,7 @@ function prefix($prefix, $str) {
 	return "";
 }
 
+// Append a suffix to a nonempty string
 function suffix($str, $suffix) {
 	if (isset($str) && strlen($str) > 0) {
 		return $str . $suffix;
@@ -35,12 +39,19 @@ function suffix($str, $suffix) {
 	return "";
 }
 
-//error handler function
+// Error handler function
 function custom_error($errno, $errstr) {
 	echo "\n<br><b>Error:</b> [$errno] $errstr";
 }
 
-function get_files_from_ftp($cfg, $path) {
+// Encode all characters for URL, except the path separator.
+function url_encode($str) {
+	$ret = rawurlencode($str);
+	return str_replace('%2F','/',$ret);
+}
+
+// Get the files from a given directory on an ftp server.
+function get_files_from_ftp($cfg, $path, $img_exts) {
 
 	// Load ftp parameters
 	$ftp_server	 = get_prop($cfg, 'ftp_server',  '127.0.0.1');
@@ -59,28 +70,53 @@ function get_files_from_ftp($cfg, $path) {
 	ftp_close($conn_id);
 	// Initialise arrays for organising results
 	$folders = array();
-	$items = array();
+	$pictures = array();
 	// Identify folders and pictures, then add them to the proper arrays
-	if(count($contents)){
-		foreach($contents as $line){
-			if (substr($line, 0, 1) === 'd') { // it's a folder
+	if(count($contents)) {
+		foreach($contents as $line) {
+			if (substr($line, 0, 1) === 'd') { // if directory
 				$folders[] = array('folder', substr($line, 56));
 			}
-			elseif (substr($line, 0, 1) === '-' && 
-				in_array(strtolower(right($line, 3)), $GLOBALS["img_exts"]) ) { // it's a picture
-				$items[] = array('file', substr($line, 56));
+			elseif (substr($line, 0, 1) === '-' &&
+				in_array(strtolower(right($line, 3)), $img_exts) ) { // if picture
+				$filename = substr($line, 56);
+				$fullname = $path . '/' . $filename;
+				$ftppath = "ftp://$ftp_user:$ftp_passwd@$ftp_server" . url_encode($fullname);
+				$pictures[] = array('file', $filename, $fullname, $ftppath);
 			}
 		}
 	}
-	return array_merge($folders, $items);
+	return array_merge($folders, $pictures);
 }
 
-function url_encode($str) {
-	$ret = rawurlencode($str);
-	return str_replace('%2F','/',$ret);
+// Get the files from a given folder on the filesystem.
+function get_files_from_fs($path, $img_exts) {
+	// Get the files in the directory
+	$files = scandir($path);
+	// Initialise arrays for organising results
+	$folders = array();
+	$pictures = array();
+
+	// If there are any folders or pictures, add them to the proper arrays.
+	if (count($files)) {
+		foreach($files as $filename) {
+			if ($filename == '..' || $filename == '.') continue;
+			$fullname = $path . '/' . $filename;
+			if(is_dir($fullname)) { // if directory
+				$folders[] = array('folder', $filename);
+			} else {
+				$info = pathinfo($fullname);
+				if (isset($info['extension']) &&
+					in_array(strtolower($info['extension']), $img_exts)) { // if picture
+					$pictures[] = array('file', $filename, $fullname, $fullname);
+				}
+			}
+		}
+	}
+	return array_merge($folders, $pictures);
 }
 
-/////////////////////////////////////// MAIN ///////////////////////////////////////
+//////////////////////////////////// MAIN ////////////////////////////////////
 
 // Set number of elements per page
 define("PAGE_SIZE", 50);
@@ -88,29 +124,32 @@ define("PAGE_SIZE", 50);
 //set error handler
 set_error_handler("custom_error");
 
-// Allowed file extensions. We only want pictures at this stage. Every other file type is ignored.
+// Allowed file extensions. We only want pictures at this stage.
+// Every other file type is ignored.
 $img_exts = array("jpg", "jpeg", "gif", "bmp", "png");
 
 // Load configuration from ini file.
 $cfg = parse_ini_file("config.ini");
 
-// Read storage type and base path. Accepted values at the moment are ftp or fs (filesystem)
+// Read storage type. Accepted values at the moment are ftp or fs (filesystem)
 $sto_type    = get_prop($cfg, 'sto_type',  'fs');
+// Read base directory.
 $sto_basedir = get_prop($cfg, 'sto_basedir', '/Files/Pictures');
 
 // Base thumbnail directory
 $thumb_basedir = get_prop($cfg, 'thumb_basedir', './pics');
 
-// Initialise directory for current request.
+// Initialise directory and page for current request.
 $dir = get_param("dir", "");
 $page = get_param("page", 0);
+$path = $sto_basedir . prefix('/', $dir);
 
-$files = array();
-
+// Get the files from the current directory
 if ($sto_type == 'ftp') {
-	get_files_from_ftp($cfg, $sto_basedir . prefix('/', $dir));
+	$files = get_files_from_ftp($cfg, $path, $img_exts);
+} else {
+	$files = get_files_from_fs($path, $img_exts);
 }
-
 
 // Get the actual page requested in the parameters.
 // If page is -1 then return the whole array (no slicing).
@@ -124,12 +163,10 @@ foreach($sliced as $file) {
 		echo '<div class="item"><a class="folder" href="?dir=' . url_encode($fpath) . '">' .
 			$file[1] . "</a></div>\n"; // create a link to its contents
 	} else {
-		// Otherwise if it's an image then create an ftp link to the picture
-		// and load a thumbnail there is one.
+		// Otherwise it's an image so create a link to the picture
+		// and load a thumbnail if there is one.
 		$thumbpath = $thumb_basedir . '/' .  suffix($dir, '/') . $file[1];
-		$filename = $sto_basedir . prefix('/', $dir) . '/' . $file[1];
-		$ftppath = "ftp://$ftp_user:$ftp_passwd@$ftp_server" . url_encode($filename);
-		echo "<div class=\"item\"><a href=\"$ftppath\"><img src=\"" . $thumbpath . "\" alt=\"$file[1]\" title=\"$filename\" /></a></div>\n";
+		echo "<div class=\"item\"><a href=\"$file[3]\"><img src=\"$thumbpath\" alt=\"$file[1]\" title=\"$file[2]\" /></a></div>\n";
 	}
 }
 
