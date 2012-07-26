@@ -52,7 +52,7 @@
 <script>
 	var appendingContent = 0;
 	$().ready(function() {
-		$('<div/>').load('load_from_ftp.php' + window.location.search, function() {
+		$('<div/>').load('load_pictures.php' + window.location.search, function() {
 			$(this).appendTo('#content');
 			$('img#loading').remove();
 		});
@@ -62,7 +62,7 @@
 		if (appendingContent == 0 && $(window).scrollTop() >= $(document).height() - $(window).height() - 80) {
 			if ($("a.loadmorelnk").length > 0) {
 				appendingContent = 1;
-				var appending = "load_from_ftp.php" + $("a.loadmorelnk").attr("href") + " #items";
+				var appending = "load_pictures.php" + $("a.loadmorelnk").attr("href") + " #items";
 				$('<div/>').load(appending, function() {
 					$("div.loadmorediv").remove();
 					$(this).appendTo('#content');
