@@ -2,8 +2,15 @@
 <head>
 	<title>Dead Simple Gallery</title>
 	<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1" >
-	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js" type="text/javascript"></script>
 	<link rel="stylesheet" type="text/css" href="http://current.bootstrapcdn.com/bootstrap-v204/css/bootstrap-combined.min.css">
+	<link rel="stylesheet" href="fancybox/jquery.fancybox.css?v=2.0.6.33" type="text/css" media="screen" />
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="fancybox/jquery.mousewheel-3.0.6.pack.js"></script>
+	<script type="text/javascript" src="fancybox/jquery.fancybox.pack.js?v=2.0.6.33"></script>
+
+	<link rel="stylesheet" href="fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.2" type="text/css" media="screen" />
+	<script type="text/javascript" src="fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.2"></script>
+
 	<style type="text/css">
 		<!--
 			body {padding-top: 60px;padding-bottom: 40px; width:90%;margin-left:auto;margin-right:auto}
@@ -56,6 +63,18 @@
 			$(this).appendTo('#content');
 			$('img#loading').remove();
 		});
+		$(".image").fancybox({
+			openEffect	: 'none',
+			closeEffect	: 'none',
+			prevEffect	: 'none',
+			nextEffect	: 'none',
+			closeBtn	: false,
+			helpers		: {
+				title	: { type : 'inside' },
+				buttons	: {}
+			}
+		});
+		
 	});
 
 	$(window).scroll(function () {
