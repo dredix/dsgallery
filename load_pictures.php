@@ -166,7 +166,7 @@ foreach($sliced as $file) {
 		// Otherwise it's an image so create a link to the picture
 		// and load a thumbnail if there is one.
 		$thumbpath = $thumb_basedir . '/' .  suffix($dir, '/') . $file[1];
-		echo "<div class=\"item\"><a class=\"image\" href=\"$file[3]\" rel=\"Gallery\"><img src=\"$thumbpath\" alt=\"$file[1]\" title=\"$file[2]\" /></a></div>\n";
+		echo "<div class=\"item\"><a class=\"image\" href=\"$file[3]\" rel=\"Gallery\" title=\"$file[2]\"><img src=\"$thumbpath\" alt=\"$file[1]\" title=\"$file[2]\" /></a></div>\n";
 	}
 }
 
