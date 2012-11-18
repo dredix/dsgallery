@@ -134,10 +134,10 @@ $cfg = parse_ini_file("config.ini");
 // Read storage type. Accepted values at the moment are ftp or fs (filesystem)
 $sto_type    = get_prop($cfg, 'sto_type',  'fs');
 // Read base directory.
-$sto_basedir = get_prop($cfg, 'sto_basedir', '/Files/Pictures');
+$sto_basedir = get_prop($cfg, 'sto_basedir', './pics/gallery');
 
 // Base thumbnail directory
-$thumb_basedir = get_prop($cfg, 'thumb_basedir', './pics');
+$thumb_basedir = get_prop($cfg, 'thumb_basedir', './pics/thumbs');
 
 // Initialise directory and page for current request.
 $dir = get_param("dir", "");
